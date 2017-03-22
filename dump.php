@@ -82,7 +82,7 @@ function importcsv($zipFolder, $tablesArray) {
 		$file = $zipFolder . '/' . $csvFile;
 
 		$cons = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_DB) or die(mysql_error());
-		$result1 = mysqli_query($cons, 'select count(*) count from' . $table);
+		$result1 = mysqli_query($cons, 'select count(*) count from ' . $table);
 		$r1 = mysqli_fetch_array($result1);
 		$count1 = (int)$r1['count'];
 
@@ -93,7 +93,7 @@ function importcsv($zipFolder, $tablesArray) {
 				LINES TERMINATED BY \'\n\'
 		')or die(mysql_error());
 
-		$result2 = mysqli_query($cons, 'select count(*) count from' . $table);
+		$result2 = mysqli_query($cons, 'select count(*) count from ' . $table);
 		$r2 = mysqli_fetch_array($result2);
 		$count2 = (int)$r2['count'];
 
