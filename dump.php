@@ -77,12 +77,12 @@ function emptyTables($tablesArray) {
 
 function importcsv($zipFolder, $tablesArray) {	
 	foreach($tablesArray as $key => $val) {
-		$csvFile = $val.".txt";
+		$csvFile = $val . '.txt';
 		$table = $val;
 		$file = $zipFolder . '/' . $csvFile;
 
 		$cons= mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_DB) or die(mysql_error());
-		$result1=mysqli_query($cons,"select count(*) count from $table");
+		$result1=mysqli_query($cons, 'select count(*) count from' . $table);
 		$r1=mysqli_fetch_array($result1);
 		$count1=(int)$r1['count'];
 
@@ -93,25 +93,25 @@ function importcsv($zipFolder, $tablesArray) {
 				LINES TERMINATED BY \'\n\'
 		')or die(mysql_error());
 
-		$result2=mysqli_query($cons,"select count(*) count from $table");
-		$r2=mysqli_fetch_array($result2);
-		$count2=(int)$r2['count'];
+		$result2 = mysqli_query($cons, 'select count(*) count from' . $table);
+		$r2 = mysqli_fetch_array($result2);
+		$count2 = (int)$r2['count'];
 
-		$count=$count2-$count1;
+		$count = $count2-$count1;
 		if($count>0)
-		echo "Import of " . $table . " Successful <br/>";
-		echo "<b> total $count records have been added to the table $table </b> <br/><br/>";
+		echo 'Import of ' . $table . ' Successful <br/>';
+		echo '<b> total $count records have been added to the table $table </b> <br/><br/>';
 	}
 }
 
 function createDatabase() {
 	$conn = new mysqli(DB_SERVER, DB_USERNAME, DB_PASSWORD);
-	$sql = "CREATE DATABASE " . DB_DB;
+	$sql = 'CREATE DATABASE ' . DB_DB;
 	
 	if ($conn->query($sql) === TRUE) {
-		echo "Database created successfully<br/>";
+		echo 'Database created successfully<br/>';
 	} else {
-		echo "Error creating database: " . $conn->error;
+		echo 'Error creating database: ' . $conn->error . '<br/>';
 	}
 }
 
