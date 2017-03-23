@@ -12,7 +12,7 @@ define('DB_USERNAME', 'root');
 define('DB_PASSWORD', '');
 define('DB_DB', 'ttc');
 
-$tablesArray = array(0 => 'agency', 1 => 'calendar', 2 => 'routes', 3 => 'shapes', 4 => 'stop_times', 5 => 'stops', 6 => 'trips', 7 => 'calendar_dates', 8 => 'stops');
+$tablesArray = array(0 => 'agency', 1 => 'calendar', 2 => 'calendar_dates', 3 => 'routes', 4 => 'shapes', 5 => 'stops', 6 => 'stop_times', 7 => 'trips');
 $zipFolder = 'csv';
 $zipFile = 'ttc.zip';
 
