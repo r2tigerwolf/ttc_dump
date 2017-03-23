@@ -12,16 +12,16 @@ define('DB_USERNAME', 'root');
 define('DB_PASSWORD', '');
 define('DB_DB', 'ttc');
 
-$tablesArray = array(0=>"agency", 1 => "calendar", 2 => "routes", 3 => "shapes", 4 => "stop_times", 5 => "stops", 6 => "trips");
+$tablesArray = array(0 => 'agency', 1 => 'calendar', 2 => 'routes', 3 => 'shapes', 4 => 'stop_times', 5 => 'stops', 6 => 'trips', 7 => 'calendar_dates', 8 => 'stops');
 $zipFolder = 'csv';
 $zipFile = 'ttc.zip';
 
 createDatabase();
 createTables();
 downloadzip($zipFolder, $zipFile);
-unzip($zipFolder, $zipFile);
 emptyTables($tablesArray);
-importcsv($zipFolder, $tablesArray);
+importcsv($zipFolder, $zipFile, $tablesArray);
+deleteFiles($zipFolder, $zipFile);
 
 function downloadzip($zipFolder, $zipFile) {
 	$url = 'http://opendata.toronto.ca/TTC/routes/OpenData_TTC_Schedules.zip';
@@ -44,21 +44,26 @@ function downloadzip($zipFolder, $zipFile) {
 	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0); 
 	curl_setopt($ch, CURLOPT_FILE, $zipResource);
-	$page = curl_exec($ch);
+    curl_setopt($ch, CURLOPT_TIMEOUT,500);
+	
+    $page = curl_exec($ch);
+    
 	if(!$page) {
-	 echo "Error :- ".curl_error($ch);
+	   echo 'Error :- ' . curl_error($ch);
+	} else {
+	   unzip($zipFolder, $zipFile);
 	}
+    
 	curl_close($ch);
 }
 
 function unzip($zipFolder, $zipFile) {
-
 	$zip = new ZipArchive;
 	
-	if($zip->open($zipFolder.'/'.$zipFile) != "true"){
-		echo "Error :- Unable to open the Zip File";
+	if($zip->open($zipFolder . '/' .$zipFile) != 'true'){
+		echo 'Error :- Unable to open the Zip File';
 	} else {
-		echo 'successfully unzipped ' . $zipFile . ' to ' . $zipFolder .'<br/>';
+		echo 'successfully unzipped ' . $zipFile . ' to ' . $zipFolder . '<br/>';    
 	}
 	
 	$zip->extractTo($zipFolder);
@@ -70,12 +75,12 @@ function emptyTables($tablesArray) {
 	
 	foreach($tablesArray as $key => $val) {
 		$table = $val;
-		mysqli_query($cons,"TRUNCATE TABLE $table");
+		mysqli_query($cons, 'TRUNCATE TABLE ' . $table);
 	}
-	echo 'tables have been successfuly truncated<br/><br/>';
+	echo '<br/>tables have been successfully truncated<br/><br/>';
 }
 
-function importcsv($zipFolder, $tablesArray) {	
+function importcsv($zipFolder, $zipFile, $tablesArray) {	
 	foreach($tablesArray as $key => $val) {
 		$csvFile = $val . '.txt';
 		$table = $val;
@@ -87,21 +92,36 @@ function importcsv($zipFolder, $tablesArray) {
 		$count1 = (int)$r1['count'];
 
 		mysqli_query($cons, '
-			LOAD DATA LOCAL INFILE "'.$file.'"
-				INTO TABLE '.$table.'
+			LOAD DATA LOCAL INFILE "' . $file . '"
+				INTO TABLE ' . $table . '
 				FIELDS TERMINATED by \',\'
 				LINES TERMINATED BY \'\n\'
-		')or die(mysql_error());
+		') or die(mysql_error());
 
 		$result2 = mysqli_query($cons, 'select count(*) count from ' . $table);
 		$r2 = mysqli_fetch_array($result2);
 		$count2 = (int)$r2['count'];
 
 		$count = $count2-$count1;
-		if($count>0)
-		echo 'Import of ' . $table . ' Successful <br/>';
-		echo '<b> total $count records have been added to the table $table </b> <br/><br/>';
+		if($count > 0) {
+            echo 'Import of ' . $table . ' successfull <br/>';
+            echo '<b> total ' . $count . ' records have been added to the table ' . $table . ' </b> <br/><br/>';
+        }     
 	}
+}
+
+function deleteFiles($zipFolder, $zipFile) {
+    $files = glob($zipFolder . '/*'); //get all file names
+    foreach($files as $file){
+        if(is_file($file)) {
+            if(unlink($file)) {
+                echo '<br />' . $file . ' have been successfully deleted';
+            }
+        }
+    }
+    if(rmdir($zipFolder)) {
+        echo '<br />the directory ' . $zipFolder . ' have been successfully deleted';
+    }
 }
 
 function createDatabase() {
@@ -116,7 +136,7 @@ function createDatabase() {
 }
 
 function createTables() {
-	$cons= mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_DB) or die(mysql_error());
+	$cons = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_DB) or die(mysql_error());
 	
 	mysqli_query($cons,"
 		CREATE TABLE `agency` (
@@ -205,7 +225,7 @@ function createTables() {
 		  `route_id` varchar(10) DEFAULT NULL,
 		  `service_id` varchar(10) DEFAULT NULL,
 		  `trip_id` varchar(10) DEFAULT NULL,
-		  `trip_headsign` varchar(10) DEFAULT NULL,
+		  `trip_headsign` varchar(255) DEFAULT NULL,
 		  `trip_short_name` varchar(10) DEFAULT NULL,
 		  `direction_id` varchar(10) DEFAULT NULL,
 		  `block_id` varchar(10) DEFAULT NULL,
