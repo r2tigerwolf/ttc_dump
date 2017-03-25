@@ -255,6 +255,10 @@ function createTables() {
 		  ADD KEY `route_id` (`route_id`);
 	");
 	mysqli_query($cons,"
+		ALTER TABLE `stops`
+		  ADD KEY `route_id` (`stop_name`);
+	");
+	mysqli_query($cons,"
 		CREATE VIEW bus_view AS
 		select `ttc`.`routes`.`route_id` AS `route_id`,`ttc`.`routes`.`route_long_name` AS `route_long_name`,`ttc`.`routes`.`route_short_name` AS `route_short_name` from `ttc`.`routes`
 	");
