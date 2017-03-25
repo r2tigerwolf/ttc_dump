@@ -103,6 +103,7 @@ function importcsv($zipFolder, $zipFile, $tablesArray) {
 		$count2 = (int)$r2['count'];
 
 		$count = $count2-$count1;
+        
 		if($count > 0) {
             echo 'Import of ' . $table . ' successfull <br/>';
             echo '<b> total ' . $count . ' records have been added to the table ' . $table . ' </b> <br/><br/>';
