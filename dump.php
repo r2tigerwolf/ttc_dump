@@ -81,34 +81,34 @@ function emptyTables($tablesArray) {
 }
 
 function importcsv($zipFolder, $zipFile, $tablesArray) {	
-	foreach($tablesArray as $key => $val) {
-		$csvFile = $val . '.txt';
-		$table = $val;
-		$file = $zipFolder . '/' . $csvFile;
-
-		$cons = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_DB) or die(mysql_error());
-		$result1 = mysqli_query($cons, 'select count(*) count from ' . $table);
-		$r1 = mysqli_fetch_array($result1);
-		$count1 = (int)$r1['count'];
-
-		mysqli_query($cons, '
-			LOAD DATA LOCAL INFILE "' . $file . '"
-				INTO TABLE ' . $table . '
-				FIELDS TERMINATED by \',\'
-				LINES TERMINATED BY \'\n\'
-		') or die(mysql_error());
-
-		$result2 = mysqli_query($cons, 'select count(*) count from ' . $table);
-		$r2 = mysqli_fetch_array($result2);
-		$count2 = (int)$r2['count'];
-
-		$count = $count2-$count1;
+    foreach($tablesArray as $key => $val) {
+        $csvFile = $val . '.txt';
+        $table = $val;
+        $file = $zipFolder . '/' . $csvFile;
+        
+        $cons = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_DB) or die(mysql_error());
+        $result1 = mysqli_query($cons, 'select count(*) count from ' . $table);
+        $r1 = mysqli_fetch_array($result1);
+        $count1 = (int)$r1['count'];
+        
+        mysqli_query($cons, '
+            LOAD DATA LOCAL INFILE "' . $file . '"
+            INTO TABLE ' . $table . '
+            FIELDS TERMINATED by \',\'
+            LINES TERMINATED BY \'\n\'
+            ') or die(mysql_error());
+        
+        $result2 = mysqli_query($cons, 'select count(*) count from ' . $table);
+        $r2 = mysqli_fetch_array($result2);
+        $count2 = (int)$r2['count'];
+        
+        $count = $count2-$count1;
         
         if($count > 0) {
             echo 'Import of ' . $table . ' successfull <br/>';
             echo '<b> total ' . $count . ' records have been added to the table ' . $table . ' </b> <br/><br/>';
         }     
-	}
+    }
 }
 
 function deleteFiles($zipFolder, $zipFile) {
