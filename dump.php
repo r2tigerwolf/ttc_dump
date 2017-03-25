@@ -164,7 +164,7 @@ function createTables() {
         `end_date` int(8) DEFAULT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
     ");
-        mysqli_query($cons,"
+    mysqli_query($cons,"
         CREATE TABLE `calendar_dates` (
         `service_id` int(1) DEFAULT NULL,
         `date` int(8) DEFAULT NULL,
